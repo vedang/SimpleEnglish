@@ -1,0 +1,11 @@
+{
+  "name": "simple-english",
+  "version": "2.1.1",
+  "description": "Plain English writing with ASD-STE100 discipline for Pi coding agent.",
+  "license": "MIT",
+  "keywords": ["pi-package", "skills", "technical-writing", "asd-ste100"],
+  "files": ["skills/", "CHANGELOG.md"],
+  "pi": {
+    "skills": ["./skills/simple-english"]
+  }
+}

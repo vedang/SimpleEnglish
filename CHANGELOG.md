@@ -2,6 +2,13 @@
 
 Each entry names the version, the date, and the measured effect where one exists.
 
+## Unreleased
+
+- Added: a skills-only Pi coding agent package manifest and instructions for
+  local and git installation, project scope, and `/skill:simple-english`.
+  The package adds no extensions, automatic hooks, dependencies, or install
+  scripts. The writing rules and published benchmark figures are unchanged.
+
 ## 2.1.1, 2026-09-30
 
 - Changed: removed wording in the skill that broke the skill's own rules. The

@@ -33,6 +33,34 @@ npx skills add AminBlg/SimpleEnglish
 
 This installs the skill only. It does not install the session hook or the output style below, so setting `outputStyle` to `simple-english:simple-english` without the plugin does nothing. Use the Claude Code plugin for those.
 
+### Pi coding agent
+
+From this reviewed checkout, install the skills-only Pi package:
+
+```bash
+pi install /absolute/path/to/SimpleEnglish
+```
+
+Pi loads the local directory in place. Keep the checkout at that path. Add `--local` to install for the current project instead of all projects.
+
+After this change is available upstream, you can also install from GitHub:
+
+```bash
+pi install git:github.com/AminBlg/SimpleEnglish
+```
+
+To keep a reviewed revision, append `@<commit>` to the git source. That commit must contain the root `package.json` with the `pi.skills` manifest.
+
+Start Pi, or run `/reload` in an open session. Invoke the skill explicitly:
+
+```text
+/skill:simple-english Rewrite this README in plain English.
+```
+
+Pi also lists the skill for the model to select when a task matches its description. Installation does not apply the full rules to every session automatically. This package exposes only the skill and its references: no extensions, automatic hooks, dependencies, or install scripts. It does not load the Claude Code output style or expose the standalone system prompt as a Pi prompt template.
+
+### Claude Code and Codex plugins
+
 Claude Code plugin, with the session hook and the output style:
 
 ```bash
