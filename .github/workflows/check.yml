@@ -10,6 +10,6 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: python3 evals/ste_lint.py --self-test
-      - run: node --test src/hooks/simple-english-activate.test.js
+      - run: node --test src/hooks/simple-english-activate.test.js src/pi/simple-english.test.mjs
       - run: python3 src/hooks/test_lint_hook.py
       - run: python3 evals/check_numbers.py

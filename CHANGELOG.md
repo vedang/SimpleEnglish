@@ -4,10 +4,13 @@ Each entry names the version, the date, and the measured effect where one exists
 
 ## Unreleased
 
-- Added: a skills-only Pi coding agent package manifest and instructions for
+- Added: a Pi coding agent package manifest and instructions for
   local and git installation, project scope, and `/skill:simple-english`.
-  The package adds no extensions, automatic hooks, dependencies, or install
-  scripts. The writing rules and published benchmark figures are unchanged.
+- Added: a Pi extension that reuses the shared activation prompt and Python
+  lint hook. Successful Markdown `write`/`edit` results receive advisory
+  findings. `agent_before_settle` records reply feedback without requesting
+  another turn. Existing exclusions apply. No npm dependencies or install
+  scripts were added. The writing rules and published figures are unchanged.
 
 ## 2.1.1, 2026-09-30
 

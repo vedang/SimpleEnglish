@@ -35,7 +35,7 @@ This installs the skill only. It does not install the session hook or the output
 
 ### Pi coding agent
 
-From this reviewed checkout, install the skills-only Pi package:
+From this checkout, install the Pi package with the skill and automatic writing checks:
 
 ```bash
 pi install /absolute/path/to/SimpleEnglish
@@ -49,7 +49,7 @@ After this change is available upstream, you can also install from GitHub:
 pi install git:github.com/AminBlg/SimpleEnglish
 ```
 
-To keep a reviewed revision, append `@<commit>` to the git source. That commit must contain the root `package.json` with the `pi.skills` manifest.
+To keep a reviewed revision, append `@<commit>` to the git source. That commit must contain the root `package.json` with the Pi manifest.
 
 Start Pi, or run `/reload` in an open session. Invoke the skill explicitly:
 
@@ -57,7 +57,33 @@ Start Pi, or run `/reload` in an open session. Invoke the skill explicitly:
 /skill:simple-english Rewrite this README in plain English.
 ```
 
-Pi also lists the skill for the model to select when a task matches its description. Installation does not apply the full rules to every session automatically. This package exposes only the skill and its references: no extensions, automatic hooks, dependencies, or install scripts. It does not load the Claude Code output style or expose the standalone system prompt as a Pi prompt template.
+The package also includes a Pi extension that activates the writing rules automatically. It uses the same prompt and advisory checks as the Claude Code hooks, with no copied rule set. The skill command loads the full instructions and references when you need them. The Claude Code output style and the standalone prompt are not registered as Pi resources.
+
+The extension uses these Pi events:
+
+- `session_start` reads the shared activation prompt. `before_agent_start` adds it as a system-prompt section on every run, including after resume or compaction. The existing 9,500-character cap and fallback rule set apply.
+- `tool_result` checks successful `write` and `edit` calls on `.md` files. Findings are appended to the tool result for the model; the tool stays successful and the extension does not edit the file.
+- `agent_before_settle` is the Stop equivalent. It checks the final reply after retries and queued work. Advice is saved as a visible model-context message, without requesting another model turn. Aborted and failed runs are skipped.
+
+Node.js is provided by Pi. The advisory checks also need Python 3.9 or newer as `python3` on your PATH. Each Python check has a 10-second timeout and a 64 KiB limit per output stream. If Python is missing or the process fails, the extension leaves the result unchanged and warns once per session when a UI is available. Activation still works. No npm dependencies or install scripts are added; the extension runs local code and starts Python only for a writing check, never a benchmark or a model client.
+
+The Markdown checks honor `CLAUDE_CONFIG_DIR` and `SIMPLE_ENGLISH_LINT_EXCLUDE`, including the existing `.claude` exclusions. Set `SIMPLE_ENGLISH_LINT_EXCLUDE='*'` before starting Pi to skip all Markdown checks; the reply check still runs. See [the hook exclusions](src/hooks/README.md#what-the-file-check-skips) for glob syntax. Findings can include document excerpts in model context, so exclude confidential paths.
+
+For skill-only use without automatic activation or checks, disable this package's extension in `pi config`, or filter it in `~/.pi/agent/settings.json`:
+
+```json
+{
+  "packages": [
+    { "source": "/absolute/path/to/SimpleEnglish", "extensions": [] }
+  ]
+}
+```
+
+Use the same source you installed. To run the offline Pi adapter tests without a model call:
+
+```bash
+node --test src/pi/simple-english.test.mjs
+```
 
 ### Claude Code and Codex plugins
 

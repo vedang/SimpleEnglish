@@ -4,8 +4,20 @@
   "description": "Plain English writing with ASD-STE100 discipline for Pi coding agent.",
   "license": "MIT",
   "keywords": ["pi-package", "skills", "technical-writing", "asd-ste100"],
-  "files": ["skills/", "CHANGELOG.md"],
+  "files": [
+    "skills/",
+    "src/pi/simple-english.mjs",
+    "src/hooks/simple-english-activate.js",
+    "src/hooks/package.json",
+    "src/hooks/README.md",
+    "src/hooks/lint_hook.py",
+    "prompts/system-prompt.md",
+    "evals/ste_lint.py",
+    "evals/slop.tsv",
+    "CHANGELOG.md"
+  ],
   "pi": {
-    "skills": ["./skills/simple-english"]
+    "skills": ["./skills/simple-english"],
+    "extensions": ["./src/pi/simple-english.mjs"]
   }
 }
