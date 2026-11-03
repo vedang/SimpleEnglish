@@ -25,31 +25,37 @@ Works in every agent that reads the [Agent Skills standard](https://agentskills.
 
 ## Install
 
-Any agent, with the [skills CLI](https://github.com/vercel-labs/skills):
+The Claude Code and Pi instructions below install from [Vedang's fork](https://github.com/vedang/SimpleEnglish).
+
+The original project is [AminBlg/SimpleEnglish](https://github.com/AminBlg/SimpleEnglish).
+
+For a skill-only install in any supported agent, use the [skills CLI](https://github.com/vercel-labs/skills):
 
 ```bash
-npx skills add AminBlg/SimpleEnglish
+npx skills add vedang/SimpleEnglish
 ```
 
-This installs the skill only. It does not install the session hook or the output style below, so setting `outputStyle` to `simple-english:simple-english` without the plugin does nothing. Use the Claude Code plugin for those.
+This installs only the skill, not the Claude Code hooks and output style or the Pi extension. Use the Claude Code or Pi instructions below for automatic activation and advisory writing checks.
 
 ### Pi coding agent
 
-From this checkout, install the Pi package with the skill and automatic writing checks:
+Install the Pi package from the fork to get the skill and automatic writing checks:
+
+```bash
+pi install git:github.com/vedang/SimpleEnglish
+```
+
+By default, Pi records the package in `~/.pi/agent/settings.json` for all projects. Add `--local` for the current project instead. That records the package in `.pi/settings.json`. Pi loads project packages only after you trust the project.
+
+To keep a reviewed revision, append `@<commit>` to the git source. That commit must contain the root `package.json` with the skill and extension entries.
+
+Alternatively, install from a local checkout:
 
 ```bash
 pi install /absolute/path/to/SimpleEnglish
 ```
 
-Pi loads the local directory in place. Keep the checkout at that path. Add `--local` to install for the current project instead of all projects.
-
-After this change is available upstream, you can also install from GitHub:
-
-```bash
-pi install git:github.com/AminBlg/SimpleEnglish
-```
-
-To keep a reviewed revision, append `@<commit>` to the git source. That commit must contain the root `package.json` with the Pi manifest.
+Pi loads the local directory in place. Keep the checkout at that path.
 
 Start Pi, or run `/reload` in an open session. Invoke the skill explicitly:
 
@@ -74,26 +80,45 @@ For skill-only use without automatic activation or checks, disable this package'
 ```json
 {
   "packages": [
-    { "source": "/absolute/path/to/SimpleEnglish", "extensions": [] }
+    { "source": "git:github.com/vedang/SimpleEnglish", "extensions": [] }
   ]
 }
 ```
 
-Use the same source you installed. To run the offline Pi adapter tests without a model call:
+Edit the existing package entry rather than adding a duplicate. Use the same source you installed, including any commit suffix or local path. For a project install, edit `.pi/settings.json` instead. Run `/reload` after changing the resource selection.
+
+To run the offline Pi adapter tests without a model call:
 
 ```bash
 node --test src/pi/simple-english.test.mjs
 ```
 
-### Claude Code and Codex plugins
+### Claude Code
 
-Claude Code plugin, with the session hook and the output style:
+If you already registered the upstream marketplace, inspect its source in Claude Code's `/plugin` marketplace view before installing. Both repositories use the same marketplace name. To use this fork, replace the upstream registration with the fork first. Do not assume that another `marketplace add` switches it.
+
+Run these commands in your terminal to install from the fork for your user account:
 
 ```bash
-claude plugin marketplace add AminBlg/SimpleEnglish && claude plugin install simple-english@simple-english
+claude plugin marketplace add vedang/SimpleEnglish --scope user
+claude plugin install simple-english@simple-english --scope user
 ```
 
-The output style is named `simple-english:simple-english`. The short name does not resolve. Select it with `/config` under Output style, or put `{"outputStyle": "simple-english:simple-english"}` in `~/.claude/settings.json`.
+Both `.claude-plugin/marketplace.json` and `.claude-plugin/plugin.json` use the name `simple-english`. The marketplace's plugin source is `./`, so it loads the plugin from the fork checkout. The upstream homepage and author fields do not select the install source.
+
+The explicit `--scope user` setting makes the installation available across projects. For a shared project installation, use `--scope project` on both commands. Use `--scope local` on both for a private installation in the current project. Project scope uses `.claude/settings.json`. Local scope uses `.claude/settings.local.json`.
+
+Restart Claude Code after installation so a new session loads the plugin and its `SessionStart` hook. The plugin supplies the skill, the output style, and three hooks:
+
+- `SessionStart` loads the condensed writing rules automatically.
+- `PostToolUse` checks Markdown files after `Write` and `Edit` calls.
+- `Stop` checks the last reply. Both writing checks are advisory. They do not block the session.
+
+The hooks need `node` and Python 3.9 or newer as `python3` on your PATH. See [the hook details](src/hooks/README.md#what-the-hook-sends) and [file exclusions](src/hooks/README.md#what-the-file-check-skips).
+
+The output style is named `simple-english:simple-english`. The short name does not resolve. Select it with `/config` under Output style, or put `{"outputStyle": "simple-english:simple-english"}` in `~/.claude/settings.json`. A skill-only install does not provide this output style.
+
+### Codex plugin (upstream)
 
 Codex plugin, with the session hook:
 
